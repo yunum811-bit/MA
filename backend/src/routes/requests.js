@@ -181,15 +181,41 @@ router.post('/:id/images', authenticate, (req, res) => {
     return res.status(400).json({ error: 'ไม่มีรูปภาพ' });
   }
 
+  const fs = require('fs');
+  const path = require('path');
+  const uploadsDir = path.resolve(__dirname, '../../uploads');
+
+  // Ensure uploads directory exists
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
   const requestId = parseInt(req.params.id);
+  const savedImages = [];
+
   for (const img of images) {
+    // Extract base64 data
+    const matches = img.data.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!matches) continue;
+
+    const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+    const base64Data = matches[2];
+    const fileName = `req${requestId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const filePath = path.join(uploadsDir, fileName);
+
+    // Save file
+    fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+
+    // Save to database (store file path instead of base64)
     prepare(`
       INSERT INTO request_images (request_id, image_data, filename)
       VALUES (?, ?, ?)
-    `).run(requestId, img.data, img.filename || 'image.jpg');
+    `).run(requestId, `/uploads/${fileName}`, img.filename || fileName);
+
+    savedImages.push(fileName);
   }
 
-  res.status(201).json({ message: `อัพโหลด ${images.length} รูปสำเร็จ` });
+  res.status(201).json({ message: `อัพโหลด ${savedImages.length} รูปสำเร็จ` });
 });
 
 // Get images for a request
@@ -203,8 +229,19 @@ router.get('/:id/images', authenticate, (req, res) => {
   res.json(images);
 });
 
-// Delete an image (admin or requester)
+// Delete an image
 router.delete('/images/:imageId', authenticate, (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+
+  const image = prepare('SELECT image_data FROM request_images WHERE id = ?').get(parseInt(req.params.imageId));
+  if (image && image.image_data.startsWith('/uploads/')) {
+    const filePath = path.resolve(__dirname, '../..', image.image_data.slice(1));
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  }
+
   prepare('DELETE FROM request_images WHERE id = ?').run(parseInt(req.params.imageId));
   res.json({ message: 'ลบรูปสำเร็จ' });
 });

@@ -34,6 +34,10 @@ async function startServer() {
     res.json({ status: 'ok', message: 'ระบบแจ้งซ่อมทำงานปกติ' });
   });
 
+  // Serve uploaded images
+  const uploadsPath = path.resolve(__dirname, '../uploads');
+  app.use('/uploads', express.static(uploadsPath));
+
   // Serve frontend (production)
   const frontendPath = path.resolve(__dirname, '../../frontend/dist');
   app.use(express.static(frontendPath));
