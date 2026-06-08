@@ -10,7 +10,7 @@ function getSettings() {
   if (fs.existsSync(settingsPath)) {
     return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
   }
-  return { companyName: 'บริษัท ตัวอย่าง จำกัด', logo: null, emailEnabled: false, smtpHost: 'smtp.office365.com', smtpPort: '587', smtpUser: '', smtpPass: '', smtpFrom: '', categories: ['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ'] };
+  return { companyName: 'บริษัท ตัวอย่าง จำกัด', logo: null, emailEnabled: false, azureTenantId: '', azureClientId: '', azureClientSecret: '', smtpFrom: '', categories: ['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ'] };
 }
 
 function saveSettings(data) {
@@ -24,17 +24,16 @@ router.get('/', authenticate, (req, res) => {
 
 // Update settings (admin only)
 router.put('/', authenticate, authorizeRoles('admin'), (req, res) => {
-  const { companyName, logo, emailEnabled, smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom, categories } = req.body;
+  const { companyName, logo, emailEnabled, azureTenantId, azureClientId, azureClientSecret, smtpFrom, categories } = req.body;
   const current = getSettings();
   const updated = {
     ...current,
     companyName: companyName !== undefined ? companyName : current.companyName,
     logo: logo !== undefined ? logo : current.logo,
     emailEnabled: emailEnabled !== undefined ? emailEnabled : current.emailEnabled,
-    smtpHost: smtpHost !== undefined ? smtpHost : current.smtpHost,
-    smtpPort: smtpPort !== undefined ? smtpPort : current.smtpPort,
-    smtpUser: smtpUser !== undefined ? smtpUser : current.smtpUser,
-    smtpPass: smtpPass !== undefined ? smtpPass : current.smtpPass,
+    azureTenantId: azureTenantId !== undefined ? azureTenantId : current.azureTenantId,
+    azureClientId: azureClientId !== undefined ? azureClientId : current.azureClientId,
+    azureClientSecret: azureClientSecret !== undefined ? azureClientSecret : current.azureClientSecret,
     smtpFrom: smtpFrom !== undefined ? smtpFrom : current.smtpFrom,
     categories: categories !== undefined ? categories : current.categories,
   };
@@ -42,13 +41,12 @@ router.put('/', authenticate, authorizeRoles('admin'), (req, res) => {
 
   // Update environment variables for email service
   process.env.EMAIL_ENABLED = updated.emailEnabled ? 'true' : 'false';
-  process.env.SMTP_HOST = updated.smtpHost || 'smtp.office365.com';
-  process.env.SMTP_PORT = updated.smtpPort || '587';
-  process.env.SMTP_USER = updated.smtpUser || '';
-  process.env.SMTP_PASS = updated.smtpPass || '';
+  process.env.AZURE_TENANT_ID = updated.azureTenantId || '';
+  process.env.AZURE_CLIENT_ID = updated.azureClientId || '';
+  process.env.AZURE_CLIENT_SECRET = updated.azureClientSecret || '';
   process.env.SMTP_FROM = updated.smtpFrom || '';
 
-  res.json({ message: 'บันทึกการตั้งค่าสำเร็จ', settings: { ...updated, smtpPass: updated.smtpPass ? '****' : '' } });
+  res.json({ message: 'บันทึกการตั้งค่าสำเร็จ', settings: { ...updated, azureClientSecret: updated.azureClientSecret ? '****' : '' } });
 });
 
 module.exports = router;

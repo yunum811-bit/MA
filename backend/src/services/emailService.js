@@ -1,47 +1,95 @@
-const nodemailer = require('nodemailer');
+const { ConfidentialClientApplication } = require('@azure/msal-node');
+const https = require('https');
 require('dotenv').config();
 
-let transporter = null;
+let msalClient = null;
 
-function getTransporter() {
-  if (!process.env.EMAIL_ENABLED || process.env.EMAIL_ENABLED !== 'true') {
-    return null;
-  }
+function getMsalClient() {
+  const tenantId = process.env.AZURE_TENANT_ID;
+  const clientId = process.env.AZURE_CLIENT_ID;
+  const clientSecret = process.env.AZURE_CLIENT_SECRET;
 
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.office365.com',
-      port: parseInt(process.env.SMTP_PORT) || 587,
-      secure: false, // true for 465, false for 587
+  if (!tenantId || !clientId || !clientSecret) return null;
+
+  if (!msalClient) {
+    msalClient = new ConfidentialClientApplication({
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      tls: {
-        ciphers: 'SSLv3',
-        rejectUnauthorized: false,
+        clientId,
+        clientSecret,
+        authority: `https://login.microsoftonline.com/${tenantId}`,
       },
     });
   }
-  return transporter;
+  return msalClient;
+}
+
+async function getAccessToken() {
+  const client = getMsalClient();
+  if (!client) return null;
+
+  const result = await client.acquireTokenByClientCredential({
+    scopes: ['https://graph.microsoft.com/.default'],
+  });
+  return result?.accessToken;
 }
 
 async function sendEmail(to, subject, html) {
-  const transport = getTransporter();
-  if (!transport) {
+  if (process.env.EMAIL_ENABLED !== 'true') {
     console.log(`[EMAIL DISABLED] To: ${to} | Subject: ${subject}`);
     return false;
   }
 
   try {
-    await transport.sendMail({
-      from: `"ระบบแจ้งซ่อม" <${process.env.SMTP_FROM}>`,
-      to,
-      subject,
-      html,
+    const token = await getAccessToken();
+    if (!token) {
+      console.error('[EMAIL ERROR] ไม่สามารถรับ access token ได้ - ตรวจสอบ AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET');
+      return false;
+    }
+
+    const senderEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
+    const requestBody = JSON.stringify({
+      message: {
+        subject,
+        body: { contentType: 'HTML', content: html },
+        toRecipients: [{ emailAddress: { address: to } }],
+      },
+      saveToSentItems: false,
     });
-    console.log(`[EMAIL SENT] To: ${to} | Subject: ${subject}`);
-    return true;
+
+    return new Promise((resolve) => {
+      const options = {
+        hostname: 'graph.microsoft.com',
+        path: `/v1.0/users/${senderEmail}/sendMail`,
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(requestBody),
+        },
+      };
+
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          if (res.statusCode === 202 || res.statusCode === 200) {
+            console.log(`[EMAIL SENT] To: ${to} | Subject: ${subject}`);
+            resolve(true);
+          } else {
+            console.error(`[EMAIL ERROR] Status: ${res.statusCode} | To: ${to} | Response: ${data}`);
+            resolve(false);
+          }
+        });
+      });
+
+      req.on('error', (err) => {
+        console.error(`[EMAIL ERROR] To: ${to} | Error: ${err.message}`);
+        resolve(false);
+      });
+
+      req.write(requestBody);
+      req.end();
+    });
   } catch (err) {
     console.error(`[EMAIL ERROR] To: ${to} | Error: ${err.message}`);
     return false;
@@ -50,6 +98,7 @@ async function sendEmail(to, subject, html) {
 
 // แจ้ง admin เมื่อมีงานซ่อมใหม่
 async function notifyNewRequest(request, requesterName) {
+  const adminEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
   const subject = `[แจ้งซ่อมใหม่] ${request.title}`;
   const html = `
     <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
@@ -68,7 +117,7 @@ async function notifyNewRequest(request, requesterName) {
       </div>
     </div>
   `;
-  return sendEmail(process.env.SMTP_USER, subject, html);
+  return sendEmail(adminEmail, subject, html);
 }
 
 // แจ้งช่างเมื่อได้รับมอบหมายงาน

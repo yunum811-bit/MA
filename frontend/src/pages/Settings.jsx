@@ -3,7 +3,7 @@ import { Settings as SettingsIcon, Upload, Building2, Mail, Tag, PlusCircle, X }
 import api from '../utils/api';
 
 export default function Settings() {
-  const [settings, setSettings] = useState({ companyName: '', logo: null, emailEnabled: false, smtpHost: 'smtp.office365.com', smtpPort: '587', smtpUser: '', smtpPass: '', smtpFrom: '', categories: ['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ'] });
+  const [settings, setSettings] = useState({ companyName: '', logo: null, emailEnabled: false, azureTenantId: '', azureClientId: '', azureClientSecret: '', smtpFrom: '', categories: ['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ'] });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -111,7 +111,7 @@ export default function Settings() {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-primary-900 flex items-center gap-2">
             <Mail size={20} className="text-primary-600" />
-            ตั้งค่า Email แจ้งเตือน
+            ตั้งค่า Email แจ้งเตือน (Microsoft Graph API)
           </h2>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -125,61 +125,56 @@ export default function Settings() {
         </div>
 
         <div className={`space-y-4 ${!settings.emailEnabled ? 'opacity-50 pointer-events-none' : ''}`}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">SMTP Host</label>
-              <input
-                type="text"
-                value={settings.smtpHost}
-                onChange={e => setSettings({ ...settings, smtpHost: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                placeholder="smtp.office365.com"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Port</label>
-              <input
-                type="text"
-                value={settings.smtpPort}
-                onChange={e => setSettings({ ...settings, smtpPort: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                placeholder="587"
-              />
-            </div>
-          </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email (ใช้ login SMTP)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tenant ID</label>
             <input
-              type="email"
-              value={settings.smtpUser}
-              onChange={e => setSettings({ ...settings, smtpUser: e.target.value })}
+              type="text"
+              value={settings.azureTenantId}
+              onChange={e => setSettings({ ...settings, azureTenantId: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-              placeholder="maintenance@yourcompany.com"
+              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">รหัสผ่าน SMTP</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Client ID (Application ID)</label>
+            <input
+              type="text"
+              value={settings.azureClientId}
+              onChange={e => setSettings({ ...settings, azureClientId: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Client Secret</label>
             <input
               type="password"
-              value={settings.smtpPass}
-              onChange={e => setSettings({ ...settings, smtpPass: e.target.value })}
+              value={settings.azureClientSecret}
+              onChange={e => setSettings({ ...settings, azureClientSecret: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
               placeholder="••••••••"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">ส่งจาก (From)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ส่งจาก (Email ผู้ส่ง)</label>
             <input
               type="email"
               value={settings.smtpFrom}
               onChange={e => setSettings({ ...settings, smtpFrom: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-              placeholder="maintenance@yourcompany.com"
+              placeholder="anek.m@serialfactoring.co.th"
             />
           </div>
-          <p className="text-xs text-gray-400">
-            ระบบจะส่ง email แจ้งเตือนเมื่อ: มีงานซ่อมใหม่ (แจ้ง admin) / มอบหมายงาน (แจ้งช่าง) / งานเสร็จ (แจ้งผู้แจ้ง)
-          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-xs text-blue-800 font-medium mb-1">วิธี setup Azure App Registration:</p>
+            <ol className="text-xs text-blue-700 list-decimal list-inside space-y-0.5">
+              <li>เข้า entra.microsoft.com → App registrations → New registration</li>
+              <li>ตั้งชื่อ เช่น "ระบบแจ้งซ่อม" → Register</li>
+              <li>คัดลอก Application (client) ID และ Directory (tenant) ID</li>
+              <li>ไป Certificates & secrets → New client secret → คัดลอก Value</li>
+              <li>ไป API permissions → Add → Microsoft Graph → Application → Mail.Send → Grant admin consent</li>
+            </ol>
+          </div>
         </div>
       </div>
 
