@@ -182,15 +182,18 @@ export default function RequestDetail() {
           <div className="p-6 border-t border-gray-100">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">รูปภาพประกอบ</h3>
             <div className="flex flex-wrap gap-3">
-              {images.map((img) => (
-                <div
-                  key={img.id}
-                  className="w-28 h-28 rounded-xl overflow-hidden border border-gray-200 cursor-pointer hover:shadow-md transition-all"
-                  onClick={() => setViewImage(img.image_data)}
-                >
-                  <img src={img.image_data} alt={img.filename} className="w-full h-full object-cover" />
-                </div>
-              ))}
+              {images.map((img) => {
+                const imgSrc = img.image_data.startsWith('data:') ? img.image_data : img.image_data;
+                return (
+                  <div
+                    key={img.id}
+                    className="w-28 h-28 rounded-xl overflow-hidden border border-gray-200 cursor-pointer hover:shadow-md transition-all"
+                    onClick={() => setViewImage(imgSrc)}
+                  >
+                    <img src={imgSrc} alt={img.filename} className="w-full h-full object-cover" />
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
