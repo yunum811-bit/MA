@@ -53,11 +53,17 @@ export default function NewRequest() {
     setLoading(true);
     try {
       const res = await api.post('/requests', form);
-      // Upload images if any
+      // Upload images one by one (to avoid large payload)
       if (images.length > 0) {
-        await api.post(`/requests/${res.data.id}/images`, {
-          images: images.map(img => ({ data: img.data, filename: img.filename }))
-        });
+        for (const img of images) {
+          try {
+            await api.post(`/requests/${res.data.id}/images`, {
+              images: [{ data: img.data, filename: img.filename }]
+            });
+          } catch (imgErr) {
+            console.error('Image upload error:', imgErr);
+          }
+        }
       }
       navigate('/requests');
     } catch (err) {
