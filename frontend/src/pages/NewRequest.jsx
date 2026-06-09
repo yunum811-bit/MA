@@ -6,7 +6,7 @@ import api from '../utils/api';
 export default function NewRequest() {
   const [form, setForm] = useState({ title: '', description: '', category: '', location: '', priority: 'medium' });
   const [categories, setCategories] = useState(['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ']);
-  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -23,12 +23,8 @@ export default function NewRequest() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
-    if (images.length + files.length > 5) {
-      alert('แนบรูปได้สูงสุด 5 รูป');
-      return;
-    }
     files.forEach(file => {
       if (file.size > 5 * 1024 * 1024) {
         alert(`${file.name} ขนาดเกิน 5MB`);
@@ -36,15 +32,18 @@ export default function NewRequest() {
       }
       const reader = new FileReader();
       reader.onload = () => {
-        setImages(prev => [...prev, { data: reader.result, filename: file.name, preview: reader.result }]);
+        setPreviews(prev => {
+          if (prev.length >= 5) return prev;
+          return [...prev, { data: reader.result, filename: file.name }];
+        });
       };
       reader.readAsDataURL(file);
     });
     e.target.value = '';
   };
 
-  const removeImage = (index) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+  const removePreview = (index) => {
+    setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -52,20 +51,21 @@ export default function NewRequest() {
     setError('');
     setLoading(true);
     try {
+      // 1. Create request
       const res = await api.post('/requests', form);
-      // Upload images one by one
-      if (images.length > 0) {
-        for (let i = 0; i < images.length; i++) {
-          try {
-            await api.post(`/requests/${res.data.id}/images`, {
-              images: [{ data: images[i].data, filename: images[i].filename }]
-            });
-          } catch (imgErr) {
-            console.error('Image upload failed:', imgErr);
-            setError(`อัพโหลดรูปที่ ${i + 1} ไม่สำเร็จ: ${imgErr.message}`);
-          }
+      const requestId = res.data.id;
+
+      // 2. Upload each image immediately
+      for (const img of previews) {
+        try {
+          await api.post(`/requests/${requestId}/images`, {
+            images: [{ data: img.data, filename: img.filename }]
+          });
+        } catch (imgErr) {
+          console.error('Upload failed:', imgErr);
         }
       }
+
       navigate('/requests');
     } catch (err) {
       setError(err.response?.data?.error || 'เกิดข้อผิดพลาด');
@@ -166,27 +166,41 @@ export default function NewRequest() {
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">แนบรูปภาพ (สูงสุด 5 รูป)</label>
-            <div className="flex flex-wrap gap-3">
-              {images.map((img, i) => (
-                <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 group">
-                  <img src={img.preview} alt="" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(i)}
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              ))}
-              {images.length < 5 && (
-                <label className="w-24 h-24 border-2 border-dashed border-primary-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition-all">
-                  <ImagePlus size={24} className="text-primary-400" />
-                  <span className="text-xs text-primary-500 mt-1">เพิ่มรูป</span>
-                  <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
-                </label>
-              )}
-            </div>
+            
+            {previews.length > 0 && (
+              <div className="flex flex-wrap gap-3 mb-3">
+                {previews.map((img, i) => (
+                  <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 group">
+                    <img src={img.data} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removePreview(i)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {previews.length < 5 && (
+              <label className="inline-flex items-center gap-2 bg-primary-50 border border-primary-200 text-primary-700 font-medium px-4 py-2 rounded-xl hover:bg-primary-100 cursor-pointer transition-all text-sm">
+                <ImagePlus size={16} />
+                <span>เลือกรูป</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleImageSelect}
+                />
+              </label>
+            )}
+
+            {previews.length > 0 && (
+              <p className="text-xs text-primary-600 mt-2 font-medium">แนบแล้ว {previews.length} รูป</p>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
@@ -195,7 +209,7 @@ export default function NewRequest() {
               disabled={loading}
               className="flex-1 bg-gradient-to-r from-primary-700 to-primary-600 text-white py-3 rounded-xl hover:from-primary-800 hover:to-primary-700 transition-all disabled:opacity-50 font-semibold shadow-lg shadow-primary-600/20 active:scale-[0.98]"
             >
-              {loading ? 'กำลังส่ง...' : `ส่งแจ้งซ่อม${images.length > 0 ? ` (${images.length} รูป)` : ''}`}
+              {loading ? 'กำลังส่ง...' : `ส่งแจ้งซ่อม${previews.length > 0 ? ` (${previews.length} รูป)` : ''}`}
             </button>
             <button
               type="button"

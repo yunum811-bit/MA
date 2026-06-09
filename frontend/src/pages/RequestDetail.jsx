@@ -178,10 +178,10 @@ export default function RequestDetail() {
         </div>
 
         {/* Images */}
-        {images.length > 0 && (
-          <div className="p-6 border-t border-gray-100">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">รูปภาพประกอบ</h3>
-            <div className="flex flex-wrap gap-3">
+        <div className="p-6 border-t border-gray-100">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">รูปภาพประกอบ</h3>
+          {images.length > 0 ? (
+            <div className="flex flex-wrap gap-3 mb-3">
               {images.map((img) => {
                 const imgSrc = img.image_data.startsWith('data:') ? img.image_data : img.image_data;
                 return (
@@ -195,8 +195,44 @@ export default function RequestDetail() {
                 );
               })}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="text-sm text-gray-400 mb-3">ไม่มีรูปภาพ</p>
+          )}
+          {isTechnician && (
+            <label className="inline-flex items-center gap-2 bg-primary-50 border border-primary-200 text-primary-700 font-medium px-4 py-2 rounded-xl hover:bg-primary-100 cursor-pointer transition-all text-sm">
+              <ImagePlus size={16} />
+              <span>เพิ่มรูป</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={async (e) => {
+                  const files = Array.from(e.target.files);
+                  for (const file of files) {
+                    if (file.size > 5 * 1024 * 1024) {
+                      alert(`${file.name} ขนาดเกิน 5MB`);
+                      continue;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                      try {
+                        await api.post(`/requests/${id}/images`, {
+                          images: [{ data: reader.result, filename: file.name }]
+                        });
+                        loadImages();
+                      } catch (err) {
+                        alert(`อัพโหลด ${file.name} ไม่สำเร็จ`);
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                  e.target.value = '';
+                }}
+              />
+            </label>
+          )}
+        </div>
 
         {/* Repair Notes - show if exists and not editing */}
         {request.notes && !isTechnician && (

@@ -9,6 +9,23 @@ async function startServer() {
   // Initialize database first
   await getDb();
 
+  // Load settings into environment
+  const fs = require('fs');
+  const settingsPath = path.resolve(__dirname, '../settings.json');
+  if (fs.existsSync(settingsPath)) {
+    try {
+      const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+      process.env.EMAIL_ENABLED = settings.emailEnabled ? 'true' : 'false';
+      process.env.AZURE_TENANT_ID = settings.azureTenantId || '';
+      process.env.AZURE_CLIENT_ID = settings.azureClientId || '';
+      process.env.AZURE_CLIENT_SECRET = settings.azureClientSecret || '';
+      process.env.SMTP_FROM = settings.smtpFrom || '';
+      console.log(`📧 Email: ${settings.emailEnabled ? 'ENABLED' : 'DISABLED'}`);
+    } catch (e) {
+      console.log('📧 Email: DISABLED (settings error)');
+    }
+  }
+
   const authRoutes = require('./routes/auth');
   const requestRoutes = require('./routes/requests');
   const dashboardRoutes = require('./routes/dashboard');
