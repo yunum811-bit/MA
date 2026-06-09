@@ -53,15 +53,16 @@ export default function NewRequest() {
     setLoading(true);
     try {
       const res = await api.post('/requests', form);
-      // Upload images one by one (to avoid large payload)
+      // Upload images one by one
       if (images.length > 0) {
-        for (const img of images) {
+        for (let i = 0; i < images.length; i++) {
           try {
             await api.post(`/requests/${res.data.id}/images`, {
-              images: [{ data: img.data, filename: img.filename }]
+              images: [{ data: images[i].data, filename: images[i].filename }]
             });
           } catch (imgErr) {
-            console.error('Image upload error:', imgErr);
+            console.error('Image upload failed:', imgErr);
+            setError(`อัพโหลดรูปที่ ${i + 1} ไม่สำเร็จ: ${imgErr.message}`);
           }
         }
       }
@@ -194,7 +195,7 @@ export default function NewRequest() {
               disabled={loading}
               className="flex-1 bg-gradient-to-r from-primary-700 to-primary-600 text-white py-3 rounded-xl hover:from-primary-800 hover:to-primary-700 transition-all disabled:opacity-50 font-semibold shadow-lg shadow-primary-600/20 active:scale-[0.98]"
             >
-              {loading ? 'กำลังส่ง...' : 'ส่งแจ้งซ่อม'}
+              {loading ? 'กำลังส่ง...' : `ส่งแจ้งซ่อม${images.length > 0 ? ` (${images.length} รูป)` : ''}`}
             </button>
             <button
               type="button"
