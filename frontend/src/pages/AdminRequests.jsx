@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, Filter, FileDown } from 'lucide-react';
+import { ClipboardList, Filter, FileDown, Trash2 } from 'lucide-react';
 import api from '../utils/api';
 import { exportRequestsToExcel } from '../utils/exportExcel';
 
@@ -14,11 +14,27 @@ export default function AdminRequests() {
   const [requesterFilter, setRequesterFilter] = useState('all');
 
   useEffect(() => {
+    loadRequests();
+  }, []);
+
+  const loadRequests = () => {
     api.get('/requests')
       .then(res => setRequests(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  const handleClearAll = async () => {
+    if (!confirm('⚠️ ยืนยันการลบรายการแจ้งซ่อมทั้งหมด?\n\nข้อมูลจะถูกลบถาวร ไม่สามารถกู้คืนได้')) return;
+    if (!confirm('คุณแน่ใจหรือไม่? กด OK เพื่อลบทั้งหมด')) return;
+    try {
+      await api.delete('/requests/all/clear');
+      alert('ลบรายการทั้งหมดสำเร็จ');
+      setRequests([]);
+    } catch (err) {
+      alert(err.response?.data?.error || 'เกิดข้อผิดพลาด');
+    }
+  };
 
   const statusLabels = { pending: 'รอดำเนินการ', in_progress: 'กำลังดำเนินการ', completed: 'เสร็จสิ้น', cancelled: 'ยกเลิก' };
   const statusColors = { pending: 'bg-accent-100 text-accent-700', in_progress: 'bg-blue-100 text-blue-700', completed: 'bg-green-100 text-green-700', cancelled: 'bg-red-100 text-red-700' };
@@ -63,6 +79,13 @@ export default function AdminRequests() {
         >
           <FileDown size={18} />
           <span>Export Excel</span>
+        </button>
+        <button
+          onClick={handleClearAll}
+          className="flex items-center gap-2 bg-red-100 text-red-700 font-semibold px-5 py-2.5 rounded-xl hover:bg-red-200 transition-all active:scale-[0.98]"
+        >
+          <Trash2 size={18} />
+          <span>ลบทั้งหมด</span>
         </button>
       </div>
 

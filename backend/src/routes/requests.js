@@ -246,6 +246,14 @@ router.delete('/images/:imageId', authenticate, (req, res) => {
   res.json({ message: 'ลบรูปสำเร็จ' });
 });
 
+// Delete all requests (admin only)
+router.delete('/all/clear', authenticate, authorizeRoles('admin'), (req, res) => {
+  prepare('DELETE FROM request_images').run();
+  prepare('DELETE FROM request_history').run();
+  prepare('DELETE FROM repair_requests').run();
+  res.json({ message: 'ลบรายการแจ้งซ่อมทั้งหมดสำเร็จ' });
+});
+
 // Delete request (admin only)
 router.delete('/:id', authenticate, authorizeRoles('admin'), (req, res) => {
   prepare('DELETE FROM request_images WHERE request_id = ?').run(parseInt(req.params.id));
