@@ -9,6 +9,9 @@ export default function AdminRequests() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [requesterFilter, setRequesterFilter] = useState('all');
 
   useEffect(() => {
     api.get('/requests')
@@ -25,8 +28,14 @@ export default function AdminRequests() {
   const filtered = requests.filter(r => {
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;
     if (priorityFilter !== 'all' && r.priority !== priorityFilter) return false;
+    if (requesterFilter !== 'all' && r.requester_name !== requesterFilter) return false;
+    if (dateFrom && r.created_at < dateFrom) return false;
+    if (dateTo && r.created_at > dateTo + 'T23:59:59') return false;
     return true;
   });
+
+  // Get unique requester names for filter
+  const requesterNames = [...new Set(requests.map(r => r.requester_name).filter(Boolean))].sort();
 
   if (loading) {
     return (
@@ -85,7 +94,44 @@ export default function AdminRequests() {
             <option value="medium">ปานกลาง</option>
             <option value="low">ต่ำ</option>
           </select>
+          <select
+            value={requesterFilter}
+            onChange={(e) => setRequesterFilter(e.target.value)}
+            className="text-sm border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white"
+          >
+            <option value="all">ทุกพนักงาน</option>
+            {requesterNames.map(name => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">จาก:</span>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">ถึง:</span>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white"
+            />
+          </div>
+          {(statusFilter !== 'all' || priorityFilter !== 'all' || requesterFilter !== 'all' || dateFrom || dateTo) && (
+            <button
+              onClick={() => { setStatusFilter('all'); setPriorityFilter('all'); setRequesterFilter('all'); setDateFrom(''); setDateTo(''); }}
+              className="text-sm text-red-500 hover:text-red-700 font-medium"
+            >
+              ล้างตัวกรอง
+            </button>
+          )}
         </div>
+        <div className="mt-2 text-sm text-gray-400">{filtered.length} รายการ</div>
       </div>
 
       {/* Table */}

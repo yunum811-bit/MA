@@ -11,7 +11,7 @@ async function startServer() {
 
   // Load settings into environment
   const fs = require('fs');
-  const settingsPath = path.resolve(__dirname, '../settings.json');
+  const settingsPath = path.resolve(__dirname, '..', 'settings.json');
   if (fs.existsSync(settingsPath)) {
     try {
       const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
@@ -24,6 +24,8 @@ async function startServer() {
     } catch (e) {
       console.log('📧 Email: DISABLED (settings error)');
     }
+  } else {
+    console.log('📧 Email: DISABLED (no settings.json)');
   }
 
   const authRoutes = require('./routes/auth');
