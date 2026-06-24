@@ -247,7 +247,7 @@ router.delete('/images/:imageId', authenticate, (req, res) => {
 });
 
 // Delete all requests (admin only)
-router.delete('/all/clear', authenticate, authorizeRoles('admin'), (req, res) => {
+router.delete('/clear-all', authenticate, authorizeRoles('admin'), (req, res) => {
   prepare('DELETE FROM request_images').run();
   prepare('DELETE FROM request_history').run();
   prepare('DELETE FROM repair_requests').run();

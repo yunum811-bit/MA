@@ -28,7 +28,7 @@ export default function AdminRequests() {
     if (!confirm('⚠️ ยืนยันการลบรายการแจ้งซ่อมทั้งหมด?\n\nข้อมูลจะถูกลบถาวร ไม่สามารถกู้คืนได้')) return;
     if (!confirm('คุณแน่ใจหรือไม่? กด OK เพื่อลบทั้งหมด')) return;
     try {
-      await api.delete('/requests/all/clear');
+      await api.delete('/requests/clear-all');
       alert('ลบรายการทั้งหมดสำเร็จ');
       setRequests([]);
     } catch (err) {
