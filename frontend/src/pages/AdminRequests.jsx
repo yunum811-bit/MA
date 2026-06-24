@@ -12,6 +12,8 @@ export default function AdminRequests() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [requesterFilter, setRequesterFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 20;
 
   useEffect(() => {
     loadRequests();
@@ -52,6 +54,13 @@ export default function AdminRequests() {
 
   // Get unique requester names for filter
   const requesterNames = [...new Set(requests.map(r => r.requester_name).filter(Boolean))].sort();
+
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginatedData = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  // Reset page when filter changes
+  useEffect(() => { setCurrentPage(1); }, [statusFilter, priorityFilter, requesterFilter, dateFrom, dateTo]);
 
   if (loading) {
     return (
@@ -175,7 +184,7 @@ export default function AdminRequests() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.map((req) => (
+              {paginatedData.map((req) => (
                 <tr key={req.id} className="hover:bg-primary-50/50 transition-colors">
                   <td className="px-4 py-3.5 text-gray-400 font-mono">{req.id}</td>
                   <td className="px-4 py-3.5">
@@ -206,6 +215,44 @@ export default function AdminRequests() {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-sm text-gray-500">
+            แสดง {(currentPage - 1) * perPage + 1}-{Math.min(currentPage * perPage, filtered.length)} จาก {filtered.length} รายการ
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ก่อนหน้า
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+              .map((page, i, arr) => (
+                <span key={page}>
+                  {i > 0 && arr[i - 1] !== page - 1 && <span className="px-1 text-gray-400">...</span>}
+                  <button
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1.5 text-sm rounded-lg ${currentPage === page ? 'bg-primary-600 text-white' : 'border border-gray-200 hover:bg-primary-50'}`}
+                  >
+                    {page}
+                  </button>
+                </span>
+              ))}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ถัดไป
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

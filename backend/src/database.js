@@ -98,7 +98,11 @@ function prepare(sql) {
   return {
     run(...params) {
       const sanitized = sanitizeParams(params);
-      db.run(sql, sanitized);
+      if (sanitized.length === 0) {
+        db.run(sql);
+      } else {
+        db.run(sql, sanitized);
+      }
       saveDb();
       const lastId = db.exec('SELECT last_insert_rowid() as id')[0]?.values[0][0];
       return { lastInsertRowid: lastId, changes: db.getRowsModified() };
