@@ -163,6 +163,18 @@ export default function NewRequest() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">วันที่แจ้งซ่อม *</label>
+            <input
+              type="date"
+              name="request_date"
+              value={form.request_date}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-gray-50/50 transition-all"
+              required
+            />
+          </div>
+
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">แนบรูปภาพ (สูงสุด 5 รูป)</label>

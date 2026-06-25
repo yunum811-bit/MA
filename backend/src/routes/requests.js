@@ -74,16 +74,18 @@ router.get('/:id', authenticate, (req, res) => {
 
 // Create new request
 router.post('/', authenticate, (req, res) => {
-  const { title, description, category, location, priority } = req.body;
+  const { title, description, category, location, priority, request_date } = req.body;
 
   if (!title || !description || !category || !location) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลให้ครบถ้วน' });
   }
 
+  const createdAt = request_date ? `${request_date} ${new Date().toTimeString().split(' ')[0]}` : new Date().toISOString();
+
   const result = prepare(`
-    INSERT INTO repair_requests (title, description, category, location, priority, requester_id)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(title, description, category, location, priority || 'medium', req.user.id);
+    INSERT INTO repair_requests (title, description, category, location, priority, requester_id, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(title, description, category, location, priority || 'medium', req.user.id, createdAt);
 
   // Add history
   prepare(`
