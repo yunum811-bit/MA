@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Upload, Building2, Mail, Tag, PlusCircle, X } from 'lucide-react';
+import { Settings as SettingsIcon, Upload, Building2, Mail, Tag, PlusCircle, X, Users } from 'lucide-react';
 import api from '../utils/api';
 
 export default function Settings() {
-  const [settings, setSettings] = useState({ companyName: '', logo: null, emailEnabled: false, azureTenantId: '', azureClientId: '', azureClientSecret: '', smtpFrom: '', categories: ['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ'] });
+  const [settings, setSettings] = useState({ companyName: '', logo: null, emailEnabled: false, azureTenantId: '', azureClientId: '', azureClientSecret: '', smtpFrom: '', categories: [], departments: [] });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [newCategory, setNewCategory] = useState('');
+  const [newDepartment, setNewDepartment] = useState('');
 
   useEffect(() => {
     api.get('/settings')
@@ -227,7 +228,58 @@ export default function Settings() {
             <span>เพิ่ม</span>
           </button>
         </div>
-        <p className="text-xs text-gray-400">หมวดหมู่เหล่านี้จะแสดงในหน้าแจ้งซ่อมใหม่</p>
+      </div>
+
+      {/* Departments Settings */}
+      <div className="bg-white/80 backdrop-blur rounded-xl p-6 shadow-sm border border-primary-100 space-y-5 mb-6">
+        <h2 className="text-lg font-semibold text-primary-900 flex items-center gap-2">
+          <Users size={20} className="text-primary-600" />
+          แผนก
+        </h2>
+
+        <div className="flex flex-wrap gap-2">
+          {(settings.departments || []).map((dept, i) => (
+            <div key={i} className="flex items-center gap-1.5 bg-accent-50 border border-accent-200 px-3 py-1.5 rounded-lg">
+              <span className="text-sm text-accent-800">{dept}</span>
+              <button
+                onClick={() => setSettings({ ...settings, departments: settings.departments.filter((_, idx) => idx !== i) })}
+                className="text-red-400 hover:text-red-600 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newDepartment}
+            onChange={e => setNewDepartment(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && newDepartment.trim()) {
+                e.preventDefault();
+                setSettings({ ...settings, departments: [...(settings.departments || []), newDepartment.trim()] });
+                setNewDepartment('');
+              }
+            }}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+            placeholder="พิมพ์ชื่อแผนกใหม่..."
+          />
+          <button
+            onClick={() => {
+              if (newDepartment.trim()) {
+                setSettings({ ...settings, departments: [...(settings.departments || []), newDepartment.trim()] });
+                setNewDepartment('');
+              }
+            }}
+            className="flex items-center gap-1.5 bg-accent-400 text-primary-900 font-semibold px-4 py-2 rounded-lg hover:bg-accent-500 transition-all"
+          >
+            <PlusCircle size={16} />
+            <span>เพิ่ม</span>
+          </button>
+        </div>
+        <p className="text-xs text-gray-400">แผนกเหล่านี้จะแสดงในหน้าจัดการพนักงาน</p>
       </div>
 
       {/* Save */}

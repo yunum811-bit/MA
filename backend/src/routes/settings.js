@@ -10,7 +10,7 @@ function getSettings() {
   if (fs.existsSync(settingsPath)) {
     return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
   }
-  return { companyName: 'บริษัท ตัวอย่าง จำกัด', logo: null, emailEnabled: false, azureTenantId: '', azureClientId: '', azureClientSecret: '', smtpFrom: '', categories: ['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ'] };
+  return { companyName: 'บริษัท ตัวอย่าง จำกัด', logo: null, emailEnabled: false, azureTenantId: '', azureClientId: '', azureClientSecret: '', smtpFrom: '', categories: ['ไฟฟ้า/แอร์', 'ประปา', 'IT/คอมพิวเตอร์', 'อาคาร/สถานที่', 'อื่นๆ'], departments: ['IT', 'ซ่อมบำรุง', 'บัญชี', 'การตลาด', 'บุคคล', 'จัดซื้อ', 'ผลิต', 'อื่นๆ'] };
 }
 
 function saveSettings(data) {
@@ -24,7 +24,7 @@ router.get('/', authenticate, (req, res) => {
 
 // Update settings (admin only)
 router.put('/', authenticate, authorizeRoles('admin'), (req, res) => {
-  const { companyName, logo, emailEnabled, azureTenantId, azureClientId, azureClientSecret, smtpFrom, categories } = req.body;
+  const { companyName, logo, emailEnabled, azureTenantId, azureClientId, azureClientSecret, smtpFrom, categories, departments } = req.body;
   const current = getSettings();
   const updated = {
     ...current,
@@ -36,6 +36,7 @@ router.put('/', authenticate, authorizeRoles('admin'), (req, res) => {
     azureClientSecret: azureClientSecret !== undefined ? azureClientSecret : current.azureClientSecret,
     smtpFrom: smtpFrom !== undefined ? smtpFrom : current.smtpFrom,
     categories: categories !== undefined ? categories : current.categories,
+    departments: departments !== undefined ? departments : current.departments,
   };
   saveSettings(updated);
 

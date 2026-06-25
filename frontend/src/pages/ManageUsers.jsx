@@ -8,7 +8,7 @@ const roles = [
   { value: 'user', label: 'ผู้ใช้งาน' },
 ];
 
-const departments = ['IT', 'ซ่อมบำรุง', 'บัญชี', 'การตลาด', 'บุคคล', 'จัดซื้อ', 'ผลิต', 'อื่นๆ'];
+const departments = [];
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -18,8 +18,16 @@ export default function ManageUsers() {
   const [form, setForm] = useState({ username: '', password: '', full_name: '', department: '', role: 'user', phone: '', email: '' });
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deptList, setDeptList] = useState(['IT', 'ซ่อมบำรุง', 'บัญชี', 'การตลาด', 'บุคคล', 'จัดซื้อ', 'ผลิต', 'อื่นๆ']);
 
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => {
+    loadUsers();
+    api.get('/settings').then(res => {
+      if (res.data.departments && res.data.departments.length > 0) {
+        setDeptList(res.data.departments);
+      }
+    }).catch(() => {});
+  }, []);
 
   const loadUsers = () => {
     api.get('/users')
@@ -230,7 +238,7 @@ export default function ManageUsers() {
                     required
                   >
                     <option value="">เลือกแผนก</option>
-                    {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                    {deptList.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
                 <div>
