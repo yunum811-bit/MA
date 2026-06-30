@@ -33,7 +33,7 @@ export default function Layout() {
               <Wrench className="h-6 w-6 text-primary-900" />
             </div>
             <div>
-              <h1 className="font-bold text-lg text-white tracking-tight">ระบบแจ้งซ่อม</h1>
+              <h1 className="font-bold text-lg text-white tracking-tight">Service Request</h1>
               <p className="text-xs text-primary-300/80">Maintenance System</p>
             </div>
           </div>

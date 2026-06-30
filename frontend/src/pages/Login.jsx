@@ -41,7 +41,7 @@ export default function Login() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl mb-5 shadow-xl shadow-primary-900/30 rotate-3">
             <Wrench className="h-9 w-9 text-accent-300 -rotate-3" />
           </div>
-          <h1 className="text-2xl font-bold text-primary-900">ระบบแจ้งซ่อม</h1>
+          <h1 className="text-2xl font-bold text-primary-900">Service Request</h1>
           <p className="text-gray-500 mt-1">Maintenance Request System</p>
         </div>
 
