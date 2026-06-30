@@ -17,8 +17,8 @@ function saveSettings(data) {
   fs.writeFileSync(settingsPath, JSON.stringify(data, null, 2), 'utf8');
 }
 
-// Get settings
-router.get('/', authenticate, (req, res) => {
+// Get settings (public - for logo on login page)
+router.get('/', (req, res) => {
   res.json(getSettings());
 });
 

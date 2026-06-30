@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Wrench, Eye, EyeOff } from 'lucide-react';
+import api from '../utils/api';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -9,8 +10,15 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [logo, setLogo] = useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    api.get('/settings').then(res => {
+      if (res.data.logo) setLogo(res.data.logo);
+    }).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,8 +46,12 @@ export default function Login() {
 
       <div className="relative z-10 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/50">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl mb-5 shadow-xl shadow-primary-900/30 rotate-3">
-            <Wrench className="h-9 w-9 text-accent-300 -rotate-3" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl mb-5 shadow-xl shadow-primary-900/30 overflow-hidden">
+            {logo ? (
+              <img src={logo} alt="Logo" className="w-full h-full object-contain p-2" />
+            ) : (
+              <Wrench className="h-9 w-9 text-accent-300" />
+            )}
           </div>
           <h1 className="text-2xl font-bold text-primary-900">Service Request</h1>
           <p className="text-gray-500 mt-1">Maintenance Request System</p>

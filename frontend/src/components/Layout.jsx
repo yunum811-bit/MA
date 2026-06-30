@@ -1,10 +1,19 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Wrench, LayoutDashboard, ClipboardList, PlusCircle, LogOut, User, Users, Settings } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import api from '../utils/api';
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [logo, setLogo] = useState(null);
+
+  useEffect(() => {
+    api.get('/settings').then(res => {
+      if (res.data.logo) setLogo(res.data.logo);
+    }).catch(() => {});
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -29,8 +38,12 @@ export default function Layout() {
         {/* Header */}
         <div className="p-5 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-accent-400 to-accent-500 rounded-xl shadow-lg shadow-accent-400/20">
-              <Wrench className="h-6 w-6 text-primary-900" />
+            <div className="p-2 bg-white/10 rounded-xl overflow-hidden">
+              {logo ? (
+                <img src={logo} alt="Logo" className="h-8 w-8 object-contain" />
+              ) : (
+                <Wrench className="h-8 w-8 text-accent-400" />
+              )}
             </div>
             <div>
               <h1 className="font-bold text-lg text-white tracking-tight">Service Request</h1>
