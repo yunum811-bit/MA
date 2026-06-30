@@ -10,7 +10,7 @@ router.get('/', authenticate, authorizeRoles('admin'), (req, res) => {
   const users = prepare(`
     SELECT id, username, full_name, department, role, phone, email, created_at 
     FROM users 
-    ORDER BY created_at DESC
+    ORDER BY username ASC
   `).all();
   res.json(users);
 });
