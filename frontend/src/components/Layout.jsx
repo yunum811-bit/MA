@@ -42,12 +42,10 @@ export default function Layout() {
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1.5">
           <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-2">เมนูหลัก</p>
-          {(user?.role === 'admin' || user?.role === 'technician') && (
-            <NavLink to="/dashboard" className={navLinkClass}>
-              <LayoutDashboard size={20} />
-              <span>Dashboard</span>
-            </NavLink>
-          )}
+          <NavLink to="/dashboard" className={navLinkClass}>
+            <LayoutDashboard size={20} />
+            <span>Dashboard</span>
+          </NavLink>
           <NavLink to="/requests" className={navLinkClass}>
             <ClipboardList size={20} />
             <span>รายการแจ้งซ่อม</span>

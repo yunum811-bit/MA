@@ -9,6 +9,7 @@ import NewRequest from './pages/NewRequest';
 import RequestDetail from './pages/RequestDetail';
 import ManageUsers from './pages/ManageUsers';
 import Settings from './pages/Settings';
+import UserDashboard from './pages/UserDashboard';
 
 function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
@@ -40,12 +41,12 @@ function AppRoutes() {
         <Route index element={
           user?.role === 'admin' || user?.role === 'technician'
             ? <Dashboard />
-            : <UserRequests />
+            : <UserDashboard />
         } />
         <Route path="dashboard" element={
-          <ProtectedRoute roles={['admin', 'technician']}>
-            <Dashboard />
-          </ProtectedRoute>
+          user?.role === 'admin' || user?.role === 'technician'
+            ? <ProtectedRoute roles={['admin', 'technician']}><Dashboard /></ProtectedRoute>
+            : <UserDashboard />
         } />
         <Route path="requests" element={
           user?.role === 'admin' || user?.role === 'technician'
