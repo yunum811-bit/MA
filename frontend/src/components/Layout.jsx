@@ -40,7 +40,7 @@ export default function Layout() {
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white/10 rounded-xl overflow-hidden">
               {logo ? (
-                <img src={logo} alt="Logo" className="h-8 w-8 object-contain" />
+                <img src={logo} alt="Logo" className="h-10 w-10 object-cover" />
               ) : (
                 <Wrench className="h-8 w-8 text-accent-400" />
               )}
