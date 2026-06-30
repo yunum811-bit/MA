@@ -46,9 +46,9 @@ export default function Login() {
 
       <div className="relative z-10 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/50">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl mb-5 shadow-xl shadow-primary-900/30 overflow-hidden">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl mb-5 shadow-xl shadow-primary-900/30 overflow-hidden p-3">
             {logo ? (
-              <img src={logo} alt="Logo" className="w-full h-full object-cover" />
+              <img src={logo} alt="Logo" className="w-full h-full object-contain" />
             ) : (
               <Wrench className="h-9 w-9 text-accent-300" />
             )}

@@ -38,11 +38,11 @@ export default function Layout() {
         {/* Header */}
         <div className="p-5 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-xl overflow-hidden">
+            <div className="bg-white/10 rounded-xl overflow-hidden flex items-center justify-center" style={{minWidth: '44px', minHeight: '44px'}}>
               {logo ? (
-                <img src={logo} alt="Logo" className="h-10 w-10 object-cover" />
+                <img src={logo} alt="Logo" className="w-11 h-11 object-contain" />
               ) : (
-                <Wrench className="h-8 w-8 text-accent-400" />
+                <Wrench className="h-7 w-7 text-accent-400" />
               )}
             </div>
             <div>
