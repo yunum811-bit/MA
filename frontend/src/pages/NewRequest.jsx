@@ -81,8 +81,8 @@ export default function NewRequest() {
           <PlusCircle className="h-5 w-5 text-accent-300" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-primary-900">แจ้งซ่อมใหม่</h1>
-          <p className="text-sm text-gray-500">กรอกข้อมูลรายละเอียดปัญหาที่ต้องการแจ้งซ่อม</p>
+          <h1 className="text-2xl font-bold text-primary-900">New Request</h1>
+          <p className="text-sm text-gray-500">Fill in the details of the issue you want to report</p>
         </div>
       </div>
 

@@ -32,7 +32,7 @@ export default function UserDashboard() {
 
   const recent = requests.slice(0, 5);
 
-  const statusLabels = { pending: 'รอดำเนินการ', in_progress: 'กำลังดำเนินการ', completed: 'เสร็จสิ้น', cancelled: 'ยกเลิก' };
+  const statusLabels = { pending: 'Pending', in_progress: 'In Progress', completed: 'Completed', cancelled: 'Cancelled' };
   const statusColors = { pending: 'bg-accent-100 text-accent-700', in_progress: 'bg-blue-100 text-blue-700', completed: 'bg-green-100 text-green-700', cancelled: 'bg-red-100 text-red-700' };
 
   return (
@@ -41,14 +41,14 @@ export default function UserDashboard() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-primary-900">สวัสดี, {user?.full_name}</h1>
-          <p className="text-sm text-gray-500 mt-1">สรุปงานแจ้งซ่อมของคุณ</p>
+          <p className="text-sm text-gray-500 mt-1">Your request summary</p>
         </div>
         <Link
           to="/requests/new"
           className="flex items-center gap-2 bg-gradient-to-r from-primary-700 to-primary-600 text-white px-5 py-2.5 rounded-xl hover:from-primary-800 hover:to-primary-700 transition-all shadow-lg shadow-primary-600/20 active:scale-[0.98]"
         >
           <PlusCircle size={18} />
-          <span>แจ้งซ่อมใหม่</span>
+          <span>New Request</span>
         </Link>
       </div>
 
@@ -58,7 +58,7 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-white">{total}</p>
-              <p className="text-sm text-white/80 mt-1">ทั้งหมด</p>
+              <p className="text-sm text-white/80 mt-1">Total</p>
             </div>
             <ClipboardList className="h-8 w-8 text-white/30" />
           </div>
@@ -67,7 +67,7 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-white">{pending}</p>
-              <p className="text-sm text-white/80 mt-1">รอดำเนินการ</p>
+              <p className="text-sm text-white/80 mt-1">Pending</p>
             </div>
             <Clock className="h-8 w-8 text-white/30" />
           </div>
@@ -76,7 +76,7 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-white">{inProgress}</p>
-              <p className="text-sm text-white/80 mt-1">กำลังดำเนินการ</p>
+              <p className="text-sm text-white/80 mt-1">In Progress</p>
             </div>
             <Loader className="h-8 w-8 text-white/30" />
           </div>
@@ -85,7 +85,7 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-white">{completed}</p>
-              <p className="text-sm text-white/80 mt-1">เสร็จสิ้น</p>
+              <p className="text-sm text-white/80 mt-1">Completed</p>
             </div>
             <CheckCircle className="h-8 w-8 text-white/30" />
           </div>
@@ -95,16 +95,16 @@ export default function UserDashboard() {
       {/* Recent Requests */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-primary-900">รายการล่าสุด</h2>
+          <h2 className="text-lg font-semibold text-primary-900">Recent Requests</h2>
           <Link to="/requests" className="text-sm text-primary-600 hover:text-primary-800 font-medium">
-            ดูทั้งหมด →
+            View All →
           </Link>
         </div>
 
         {recent.length === 0 ? (
           <div className="text-center py-8">
             <ClipboardList className="mx-auto h-12 w-12 text-gray-200 mb-3" />
-            <p className="text-gray-400">ยังไม่มีรายการแจ้งซ่อม</p>
+            <p className="text-gray-400">No requests yet</p>
           </div>
         ) : (
           <div className="space-y-3">

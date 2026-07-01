@@ -38,10 +38,10 @@ export default function AdminRequests() {
     }
   };
 
-  const statusLabels = { pending: 'รอดำเนินการ', in_progress: 'กำลังดำเนินการ', completed: 'เสร็จสิ้น', cancelled: 'ยกเลิก' };
+  const statusLabels = { pending: 'Pending', in_progress: 'In Progress', completed: 'Completed', cancelled: 'Cancelled' };
   const statusColors = { pending: 'bg-accent-100 text-accent-700', in_progress: 'bg-blue-100 text-blue-700', completed: 'bg-green-100 text-green-700', cancelled: 'bg-red-100 text-red-700' };
   const priorityColors = { high: 'bg-red-100 text-red-700', medium: 'bg-accent-100 text-accent-700', low: 'bg-primary-100 text-primary-700' };
-  const priorityLabels = { high: 'สูง', medium: 'ปานกลาง', low: 'ต่ำ' };
+  const priorityLabels = { high: 'High', medium: 'Medium', low: 'Low' };
 
   const filtered = requests.filter(r => {
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;
@@ -78,7 +78,7 @@ export default function AdminRequests() {
             <ClipboardList className="h-5 w-5 text-accent-300" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-primary-900">จัดการงานซ่อม</h1>
+            <h1 className="text-2xl font-bold text-primary-900">Manage Requests</h1>
             <p className="text-sm text-gray-500">{filtered.length} รายการ</p>
           </div>
         </div>

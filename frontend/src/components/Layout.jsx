@@ -54,30 +54,30 @@ export default function Layout() {
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1.5">
-          <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-2">เมนูหลัก</p>
+          <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-2">MENU</p>
           <NavLink to="/dashboard" className={navLinkClass}>
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
           </NavLink>
           <NavLink to="/requests" className={navLinkClass}>
             <ClipboardList size={20} />
-            <span>รายการแจ้งซ่อม</span>
+            <span>All Requests</span>
           </NavLink>
           <NavLink to="/requests/new" className={navLinkClass}>
             <PlusCircle size={20} />
-            <span>แจ้งซ่อมใหม่</span>
+            <span>New Request</span>
           </NavLink>
 
           {user?.role === 'admin' && (
             <>
-              <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-5">การจัดการ</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-5">MANAGEMENT</p>
               <NavLink to="/users" className={navLinkClass}>
                 <Users size={20} />
-                <span>จัดการพนักงาน</span>
+                <span>Manage Users</span>
               </NavLink>
               <NavLink to="/settings" className={navLinkClass}>
                 <Settings size={20} />
-                <span>ตั้งค่าองค์กร</span>
+                <span>Settings</span>
               </NavLink>
             </>
           )}
@@ -101,7 +101,7 @@ export default function Layout() {
             className="flex items-center gap-2 w-full px-4 py-2 text-sm text-primary-200/80 hover:bg-white/10 hover:text-white rounded-xl transition-all"
           >
             <LogOut size={16} />
-            <span>ออกจากระบบ</span>
+            <span>Logout</span>
           </button>
         </div>
       </aside>

@@ -15,10 +15,10 @@ export default function UserRequests() {
       .finally(() => setLoading(false));
   }, []);
 
-  const statusLabels = { pending: 'รอดำเนินการ', in_progress: 'กำลังดำเนินการ', completed: 'เสร็จสิ้น', cancelled: 'ยกเลิก' };
+  const statusLabels = { pending: 'Pending', in_progress: 'In Progress', completed: 'Completed', cancelled: 'Cancelled' };
   const statusColors = { pending: 'bg-accent-100 text-accent-700', in_progress: 'bg-blue-100 text-blue-700', completed: 'bg-green-100 text-green-700', cancelled: 'bg-red-100 text-red-700' };
   const priorityColors = { high: 'bg-red-100 text-red-700', medium: 'bg-accent-100 text-accent-700', low: 'bg-primary-100 text-primary-700' };
-  const priorityLabels = { high: 'สูง', medium: 'ปานกลาง', low: 'ต่ำ' };
+  const priorityLabels = { high: 'High', medium: 'Medium', low: 'Low' };
 
   if (loading) {
     return (
@@ -36,7 +36,7 @@ export default function UserRequests() {
             <ClipboardList className="h-5 w-5 text-accent-300" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-primary-900">รายการแจ้งซ่อมของฉัน</h1>
+            <h1 className="text-2xl font-bold text-primary-900">My Requests</h1>
             <p className="text-sm text-gray-500">{requests.length} รายการ</p>
           </div>
         </div>
@@ -53,7 +53,7 @@ export default function UserRequests() {
             className="flex items-center gap-2 bg-gradient-to-r from-primary-700 to-primary-600 text-white px-5 py-2.5 rounded-xl hover:from-primary-800 hover:to-primary-700 transition-all shadow-lg shadow-primary-600/20 active:scale-[0.98]"
           >
             <PlusCircle size={18} />
-            <span>แจ้งซ่อมใหม่</span>
+            <span>New Request</span>
           </Link>
         </div>
       </div>
@@ -61,9 +61,9 @@ export default function UserRequests() {
       {requests.length === 0 ? (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-16 text-center shadow-sm border border-primary-100/50">
           <ClipboardList className="mx-auto h-16 w-16 text-primary-200 mb-4" />
-          <p className="text-gray-500 text-lg">ยังไม่มีรายการแจ้งซ่อม</p>
+          <p className="text-gray-500 text-lg">No requests yet</p>
           <Link to="/requests/new" className="inline-block mt-4 bg-primary-600 text-white px-6 py-2.5 rounded-xl hover:bg-primary-700 transition-all font-medium">
-            สร้างรายการแจ้งซ่อมใหม่
+            Create New Request
           </Link>
         </div>
       ) : (
