@@ -1,11 +1,13 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Wrench, LayoutDashboard, ClipboardList, PlusCircle, LogOut, User, Users, Settings } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { Wrench, LayoutDashboard, ClipboardList, PlusCircle, LogOut, User, Users, Settings, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
   const [logo, setLogo] = useState(null);
 
@@ -54,30 +56,30 @@ export default function Layout() {
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1.5">
-          <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-2">MENU</p>
+          <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-2">{t('menu')}</p>
           <NavLink to="/dashboard" className={navLinkClass}>
             <LayoutDashboard size={20} />
-            <span>Dashboard</span>
+            <span>{t('dashboard')}</span>
           </NavLink>
           <NavLink to="/requests" className={navLinkClass}>
             <ClipboardList size={20} />
-            <span>All Requests</span>
+            <span>{t('allRequests')}</span>
           </NavLink>
           <NavLink to="/requests/new" className={navLinkClass}>
             <PlusCircle size={20} />
-            <span>New Request</span>
+            <span>{t('newRequest')}</span>
           </NavLink>
 
           {user?.role === 'admin' && (
             <>
-              <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-5">MANAGEMENT</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider px-4 mb-2 mt-5">{t('management')}</p>
               <NavLink to="/users" className={navLinkClass}>
                 <Users size={20} />
-                <span>Manage Users</span>
+                <span>{t('manageUsers')}</span>
               </NavLink>
               <NavLink to="/settings" className={navLinkClass}>
                 <Settings size={20} />
-                <span>Settings</span>
+                <span>{t('settings')}</span>
               </NavLink>
             </>
           )}
@@ -92,16 +94,25 @@ export default function Layout() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{user?.full_name}</p>
               <p className="text-xs text-primary-300/80">
-                {user?.role === 'admin' ? 'ผู้ดูแลระบบ' : user?.role === 'technician' ? 'ช่าง' : 'ผู้ใช้งาน'}
+                {user?.role === 'admin' ? t('admin') : user?.role === 'technician' ? t('technician') : t('user')}
               </p>
             </div>
+          </div>
+          <div className="flex gap-2 mb-2 px-2">
+            <button
+              onClick={() => setLang(lang === 'th' ? 'en' : 'th')}
+              className="flex items-center gap-1.5 w-full px-3 py-1.5 text-xs text-primary-200/80 hover:bg-white/10 rounded-lg transition-all"
+            >
+              <Globe size={14} />
+              <span>{lang === 'th' ? 'EN / ไทย' : 'TH / English'}</span>
+            </button>
           </div>
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 w-full px-4 py-2 text-sm text-primary-200/80 hover:bg-white/10 hover:text-white rounded-xl transition-all"
           >
             <LogOut size={16} />
-            <span>Logout</span>
+            <span>{t('logout')}</span>
           </button>
         </div>
       </aside>

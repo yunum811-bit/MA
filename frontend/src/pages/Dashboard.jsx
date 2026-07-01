@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { ClipboardList, Clock, Loader, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import api from '../utils/api';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -78,8 +80,8 @@ export default function Dashboard() {
           <TrendingUp className="h-5 w-5 text-accent-300" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-primary-900">Dashboard</h1>
-          <p className="text-sm text-gray-500">ภาพรวมงานซ่อมบำรุง</p>
+          <h1 className="text-2xl font-bold text-primary-900">{t('dashboardTitle')}</h1>
+          <p className="text-sm text-gray-500">{t('dashboardSubtitle')}</p>
         </div>
       </div>
 
@@ -179,7 +181,7 @@ export default function Dashboard() {
 
         {/* Summary Area Chart - simulated trend */}
         <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
-          <h2 className="text-lg font-semibold text-primary-900 mb-4">สรุปภาพรวม</h2>
+          <h2 className="text-lg font-semibold text-primary-900 mb-4">{t('overview')}</h2>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart
               data={[

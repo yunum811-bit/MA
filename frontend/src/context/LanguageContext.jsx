@@ -1,0 +1,346 @@
+import { createContext, useContext, useState, useEffect } from 'react';
+
+const LanguageContext = createContext(null);
+
+const translations = {
+  en: {
+    // Sidebar
+    menu: 'MENU',
+    management: 'MANAGEMENT',
+    dashboard: 'Dashboard',
+    allRequests: 'All Requests',
+    newRequest: 'New Request',
+    manageUsers: 'Manage Users',
+    settings: 'Settings',
+    logout: 'Logout',
+    admin: 'Admin',
+    technician: 'Technician',
+    user: 'User',
+
+    // Dashboard
+    dashboardTitle: 'Dashboard',
+    dashboardSubtitle: 'Service request overview',
+    total: 'Total',
+    pending: 'Pending',
+    inProgress: 'In Progress',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+    byCategory: 'By Category',
+    byPriority: 'By Priority',
+    recentRequests: 'Recent Requests',
+    statusRatio: 'Status Ratio',
+    requestsByCategory: 'Requests by Category',
+    overview: 'Overview',
+    items: 'items',
+
+    // Priority
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+
+    // Requests
+    myRequests: 'My Requests',
+    manageRequests: 'Manage Requests',
+    yourSummary: 'Your request summary',
+    noRequests: 'No requests yet',
+    createNewRequest: 'Create New Request',
+    viewAll: 'View All →',
+    filter: 'Filter:',
+    allStatus: 'All Status',
+    allPriority: 'All Priority',
+    allStaff: 'All Staff',
+    from: 'From:',
+    to: 'To:',
+    clearFilter: 'Clear Filter',
+    exportExcel: 'Export Excel',
+    deleteAll: 'Delete All',
+    prev: 'Previous',
+    next: 'Next',
+    showing: 'Showing',
+    of: 'of',
+
+    // New Request Form
+    newRequestTitle: 'New Request',
+    newRequestSubtitle: 'Fill in the details of the issue you want to report',
+    title: 'Title',
+    titlePlaceholder: 'e.g. Air conditioner not working',
+    description: 'Description',
+    descriptionPlaceholder: 'Describe the issue in detail',
+    category: 'Category',
+    selectCategory: 'Select category',
+    priority: 'Priority',
+    location: 'Location',
+    locationPlaceholder: 'e.g. Meeting Room, Floor 3',
+    requestDate: 'Request Date',
+    attachImages: 'Attach Images (max 5)',
+    selectImage: 'Select Image',
+    attached: 'attached',
+    images: 'images',
+    submit: 'Submit Request',
+    submitting: 'Submitting...',
+    cancel: 'Cancel',
+
+    // Request Detail
+    back: 'Back',
+    details: 'DETAILS',
+    additionalInfo: 'ADDITIONAL INFO',
+    requester: 'Requester',
+    assignedTo: 'Assigned to',
+    notAssigned: 'Not assigned',
+    requestedDate: 'Requested',
+    completedDate: 'Completed',
+    images_section: 'IMAGES',
+    noImages: 'No images',
+    addImage: 'Add Image',
+    repairNotes: 'REPAIR NOTES',
+    repairDetails: 'Repair Details',
+    repairPlaceholder: 'Repair method, parts used, or notes...',
+    saveNotes: 'Save Notes',
+    assign: 'Assign:',
+    selectTech: 'Select technician',
+    startWork: 'Start Work',
+    markComplete: 'Complete',
+    cancelRequest: 'Cancel',
+    deleteRequest: 'Delete this request',
+    history: 'HISTORY',
+    manageRequest: 'MANAGE REQUEST',
+
+    // Users
+    manageUsersTitle: 'Manage Users',
+    addUser: 'Add User',
+    editUser: 'Edit User',
+    addNewUser: 'Add New User',
+    fullName: 'Full Name',
+    username: 'Username',
+    password: 'Password',
+    newPassword: 'New Password (leave blank to keep)',
+    department: 'Department',
+    selectDept: 'Select department',
+    role: 'Role',
+    phone: 'Phone',
+    email: 'Email',
+    save: 'Save',
+    saving: 'Saving...',
+
+    // Settings
+    settingsTitle: 'Organization Settings',
+    companyInfo: 'Company Info',
+    companyLogo: 'Company Logo',
+    uploadLogo: 'Upload Logo',
+    removeLogo: 'Remove Logo',
+    companyName: 'Company Name',
+    emailSettings: 'Email Notification (Microsoft Graph API)',
+    enabled: 'Enabled',
+    tenantId: 'Tenant ID',
+    clientId: 'Client ID (Application ID)',
+    clientSecret: 'Client Secret',
+    sendFrom: 'Send From (Email)',
+    categories: 'Request Categories',
+    departments: 'Departments',
+    addCategory: 'Type new category...',
+    addDepartment: 'Type new department...',
+    add: 'Add',
+    saveSettings: 'Save Settings',
+    language: 'Language',
+
+    // Login
+    loginTitle: 'Service Request',
+    loginSubtitle: 'Maintenance Request System',
+    loginUsername: 'Username',
+    loginPassword: 'Password',
+    loginButton: 'Login',
+    loggingIn: 'Logging in...',
+
+    // Table headers
+    thTitle: 'Title',
+    thRequester: 'Requester',
+    thDept: 'Department',
+    thCategory: 'Category',
+    thStatus: 'Status',
+    thPriority: 'Priority',
+    thAssigned: 'Assigned',
+    thDate: 'Date',
+    thManage: 'Actions',
+  },
+  th: {
+    // Sidebar
+    menu: 'เมนูหลัก',
+    management: 'การจัดการ',
+    dashboard: 'Dashboard',
+    allRequests: 'รายการแจ้งซ่อม',
+    newRequest: 'แจ้งซ่อมใหม่',
+    manageUsers: 'จัดการพนักงาน',
+    settings: 'ตั้งค่าองค์กร',
+    logout: 'ออกจากระบบ',
+    admin: 'ผู้ดูแลระบบ',
+    technician: 'ช่าง',
+    user: 'ผู้ใช้งาน',
+
+    // Dashboard
+    dashboardTitle: 'Dashboard',
+    dashboardSubtitle: 'ภาพรวม Service Request',
+    total: 'ทั้งหมด',
+    pending: 'รอดำเนินการ',
+    inProgress: 'กำลังดำเนินการ',
+    completed: 'เสร็จสิ้น',
+    cancelled: 'ยกเลิก',
+    byCategory: 'ตามหมวดหมู่',
+    byPriority: 'ตามความเร่งด่วน',
+    recentRequests: 'รายการล่าสุด',
+    statusRatio: 'สัดส่วนตามสถานะ',
+    requestsByCategory: 'จำนวนงานตามหมวดหมู่',
+    overview: 'สรุปภาพรวม',
+    items: 'รายการ',
+
+    // Priority
+    high: 'สูง',
+    medium: 'ปานกลาง',
+    low: 'ต่ำ',
+
+    // Requests
+    myRequests: 'รายการแจ้งซ่อมของฉัน',
+    manageRequests: 'จัดการงานซ่อม',
+    yourSummary: 'สรุป Service Request ของคุณ',
+    noRequests: 'ยังไม่มีรายการ',
+    createNewRequest: 'สร้างรายการใหม่',
+    viewAll: 'ดูทั้งหมด →',
+    filter: 'กรอง:',
+    allStatus: 'ทุกสถานะ',
+    allPriority: 'ทุกความเร่งด่วน',
+    allStaff: 'ทุกพนักงาน',
+    from: 'จาก:',
+    to: 'ถึง:',
+    clearFilter: 'ล้างตัวกรอง',
+    exportExcel: 'Export Excel',
+    deleteAll: 'ลบทั้งหมด',
+    prev: 'ก่อนหน้า',
+    next: 'ถัดไป',
+    showing: 'แสดง',
+    of: 'จาก',
+
+    // New Request Form
+    newRequestTitle: 'แจ้งซ่อมใหม่',
+    newRequestSubtitle: 'กรอกข้อมูลรายละเอียดปัญหาที่ต้องการแจ้ง',
+    title: 'หัวข้อ',
+    titlePlaceholder: 'เช่น แอร์ไม่เย็น, ก๊อกน้ำรั่ว',
+    description: 'รายละเอียด',
+    descriptionPlaceholder: 'อธิบายปัญหาที่พบโดยละเอียด',
+    category: 'หมวดหมู่',
+    selectCategory: 'เลือกหมวดหมู่',
+    priority: 'ความเร่งด่วน',
+    location: 'สถานที่',
+    locationPlaceholder: 'เช่น ห้องประชุม ชั้น 3',
+    requestDate: 'วันที่แจ้ง',
+    attachImages: 'แนบรูปภาพ (สูงสุด 5 รูป)',
+    selectImage: 'เลือกรูป',
+    attached: 'แนบแล้ว',
+    images: 'รูป',
+    submit: 'ส่งแจ้งซ่อม',
+    submitting: 'กำลังส่ง...',
+    cancel: 'ยกเลิก',
+
+    // Request Detail
+    back: 'กลับ',
+    details: 'รายละเอียด',
+    additionalInfo: 'ข้อมูลเพิ่มเติม',
+    requester: 'ผู้แจ้ง',
+    assignedTo: 'ผู้รับผิดชอบ',
+    notAssigned: 'ยังไม่มอบหมาย',
+    requestedDate: 'วันที่แจ้ง',
+    completedDate: 'วันที่เสร็จ',
+    images_section: 'รูปภาพประกอบ',
+    noImages: 'ไม่มีรูปภาพ',
+    addImage: 'เพิ่มรูป',
+    repairNotes: 'วิธีการซ่อม / บันทึกช่าง',
+    repairDetails: 'รายละเอียดวิธีการซ่อม',
+    repairPlaceholder: 'บันทึกวิธีการซ่อม อะไหล่ที่ใช้ หรือหมายเหตุ...',
+    saveNotes: 'บันทึกวิธีซ่อม',
+    assign: 'มอบหมาย:',
+    selectTech: 'เลือกช่าง',
+    startWork: 'เริ่มดำเนินการ',
+    markComplete: 'เสร็จสิ้น',
+    cancelRequest: 'ยกเลิก',
+    deleteRequest: 'ลบรายการนี้',
+    history: 'ประวัติการดำเนินการ',
+    manageRequest: 'จัดการงานซ่อม',
+
+    // Users
+    manageUsersTitle: 'จัดการพนักงาน',
+    addUser: 'เพิ่มพนักงาน',
+    editUser: 'แก้ไขพนักงาน',
+    addNewUser: 'เพิ่มพนักงานใหม่',
+    fullName: 'ชื่อ-สกุล',
+    username: 'ชื่อผู้ใช้',
+    password: 'รหัสผ่าน',
+    newPassword: 'รหัสผ่านใหม่ (เว้นว่างถ้าไม่เปลี่ยน)',
+    department: 'แผนก',
+    selectDept: 'เลือกแผนก',
+    role: 'สิทธิ์',
+    phone: 'โทรศัพท์',
+    email: 'Email',
+    save: 'บันทึก',
+    saving: 'กำลังบันทึก...',
+
+    // Settings
+    settingsTitle: 'ตั้งค่าองค์กร',
+    companyInfo: 'ข้อมูลองค์กร',
+    companyLogo: 'โลโก้องค์กร',
+    uploadLogo: 'อัพโหลดโลโก้',
+    removeLogo: 'ลบโลโก้',
+    companyName: 'ชื่อองค์กร',
+    emailSettings: 'ตั้งค่า Email แจ้งเตือน (Microsoft Graph API)',
+    enabled: 'เปิดใช้งาน',
+    tenantId: 'Tenant ID',
+    clientId: 'Client ID (Application ID)',
+    clientSecret: 'Client Secret',
+    sendFrom: 'ส่งจาก (Email ผู้ส่ง)',
+    categories: 'หมวดหมู่การแจ้งซ่อม',
+    departments: 'แผนก',
+    addCategory: 'พิมพ์ชื่อหมวดหมู่ใหม่...',
+    addDepartment: 'พิมพ์ชื่อแผนกใหม่...',
+    add: 'เพิ่ม',
+    saveSettings: 'บันทึกการตั้งค่า',
+    language: 'ภาษา',
+
+    // Login
+    loginTitle: 'Service Request',
+    loginSubtitle: 'ระบบแจ้งซ่อม',
+    loginUsername: 'ชื่อผู้ใช้',
+    loginPassword: 'รหัสผ่าน',
+    loginButton: 'เข้าสู่ระบบ',
+    loggingIn: 'กำลังเข้าสู่ระบบ...',
+
+    // Table headers
+    thTitle: 'หัวข้อ',
+    thRequester: 'ผู้แจ้ง',
+    thDept: 'แผนก',
+    thCategory: 'หมวดหมู่',
+    thStatus: 'สถานะ',
+    thPriority: 'ความเร่งด่วน',
+    thAssigned: 'ผู้รับผิดชอบ',
+    thDate: 'วันที่',
+    thManage: 'จัดการ',
+  },
+};
+
+export function LanguageProvider({ children }) {
+  const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'th');
+
+  useEffect(() => {
+    localStorage.setItem('lang', lang);
+  }, [lang]);
+
+  const t = (key) => translations[lang]?.[key] || translations['en']?.[key] || key;
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) throw new Error('useLanguage must be used within LanguageProvider');
+  return context;
+}
