@@ -8,13 +8,20 @@ export default function Dashboard() {
   const { t } = useLanguage();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState('');
 
-  useEffect(() => {
-    api.get('/dashboard/stats')
+  const loadStats = (month) => {
+    setLoading(true);
+    const url = month ? `/dashboard/stats?month=${month}` : '/dashboard/stats';
+    api.get(url)
       .then(res => setStats(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => {
+    loadStats(selectedMonth);
+  }, [selectedMonth]);
 
   if (loading) {
     return (
@@ -75,13 +82,31 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-2.5 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl shadow-lg shadow-primary-600/20">
-          <TrendingUp className="h-5 w-5 text-accent-300" />
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl shadow-lg shadow-primary-600/20">
+            <TrendingUp className="h-5 w-5 text-accent-300" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-primary-900">{t('dashboardTitle')}</h1>
+            <p className="text-sm text-gray-500">{t('dashboardSubtitle')}</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-primary-900">{t('dashboardTitle')}</h1>
-          <p className="text-sm text-gray-500">{t('dashboardSubtitle')}</p>
+        <div className="flex items-center gap-2">
+          <input
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="text-sm border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white"
+          />
+          {selectedMonth && (
+            <button
+              onClick={() => setSelectedMonth('')}
+              className="text-sm text-red-500 hover:text-red-700 font-medium px-2"
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
@@ -214,6 +239,34 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Monthly Trend Chart */}
+      {stats.monthly && stats.monthly.length > 1 && (
+        <div className="mt-6 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
+          <h2 className="text-lg font-semibold text-primary-900 mb-4">{t('overview')}</h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <AreaChart data={stats.monthly} margin={{ top: 10, right: 20, bottom: 5, left: 0 }}>
+              <defs>
+                <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0.02} />
+                </linearGradient>
+                <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#facc15" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#facc15" stopOpacity={0.02} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6b7280' }} />
+              <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} allowDecimals={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Area type="monotone" dataKey="total" name={t('total')} stroke="#16a34a" strokeWidth={2} fill="url(#colorTotal)" dot={{ fill: '#16a34a', r: 4 }} />
+              <Area type="monotone" dataKey="completed" name={t('completed')} stroke="#facc15" strokeWidth={2} fill="url(#colorCompleted)" dot={{ fill: '#facc15', r: 4 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Recent Requests */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
