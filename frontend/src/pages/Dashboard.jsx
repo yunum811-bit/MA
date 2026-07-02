@@ -132,7 +132,7 @@ export default function Dashboard() {
         {/* Status Pie Chart */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
           <h2 className="text-lg font-semibold text-primary-900 mb-4">สัดส่วนตามสถานะ</h2>
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
                 data={statusPieData}
@@ -161,7 +161,7 @@ export default function Dashboard() {
         {/* Category Bar Chart */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
           <h2 className="text-lg font-semibold text-primary-900 mb-4">จำนวนงานตามหมวดหมู่</h2>
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={categoryBarData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6b7280' }} />
@@ -182,7 +182,7 @@ export default function Dashboard() {
         {/* Priority Pie */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
           <h2 className="text-lg font-semibold text-primary-900 mb-4">ตามความเร่งด่วน</h2>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={160}>
             <PieChart>
               <Pie
                 data={priorityPieData}
@@ -207,7 +207,7 @@ export default function Dashboard() {
         {/* Summary Area Chart - simulated trend */}
         <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
           <h2 className="text-lg font-semibold text-primary-900 mb-4">{t('overview')}</h2>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={160}>
             <AreaChart
               data={[
                 { name: 'รอดำเนินการ', value: stats.pending },
@@ -244,7 +244,7 @@ export default function Dashboard() {
       {stats.monthly && stats.monthly.length > 1 && (
         <div className="mt-6 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
           <h2 className="text-lg font-semibold text-primary-900 mb-4">{t('overview')}</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={stats.monthly} margin={{ top: 10, right: 20, bottom: 5, left: 0 }}>
               <defs>
                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
