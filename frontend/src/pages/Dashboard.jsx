@@ -129,32 +129,21 @@ export default function Dashboard() {
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Status Pie Chart */}
+        {/* Status Bar Chart */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-primary-100/50">
-          <h2 className="text-lg font-semibold text-primary-900 mb-4">สัดส่วนตามสถานะ</h2>
+          <h2 className="text-lg font-semibold text-primary-900 mb-4">{t('statusRatio')}</h2>
           <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie
-                data={statusPieData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                paddingAngle={4}
-                dataKey="value"
-                stroke="none"
-              >
+            <BarChart data={statusPieData} layout="vertical" margin={{ top: 5, right: 30, bottom: 5, left: 80 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 11, fill: '#6b7280' }} allowDecimals={false} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#374151' }} width={75} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={24}>
                 {statusPieData.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
                 ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                verticalAlign="bottom"
-                height={36}
-                formatter={(value) => <span className="text-sm text-gray-600">{value}</span>}
-              />
-            </PieChart>
+              </Bar>
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
